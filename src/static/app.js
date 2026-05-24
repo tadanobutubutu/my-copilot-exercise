@@ -1,92 +1,45 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const activitiesList = document.getElementById("activities-list");
-  const activitySelect = document.getElementById("activity");
-  const signupForm = document.getElementById("signup-form");
-  const messageDiv = document.getElementById("message");
+// Finalized app.js (Simulating Copilot output)
+const apiBase = "/activities";
 
-  // Function to fetch activities from API
-  async function fetchActivities() {
-    try {
-      const response = await fetch("/activities");
-      const activities = await response.json();
-
-      // Clear loading message
-      activitiesList.innerHTML = "";
-
-      // Populate activities list
-      Object.entries(activities).forEach(([name, details]) => {
-        const activityCard = document.createElement("div");
-        activityCard.className = "activity-card";
-
-        const spotsLeft = details.max_participants - details.participants.length;
-
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-        `;
-
-        activitiesList.appendChild(activityCard);
-
-        // Add option to select dropdown
-        const option = document.createElement("option");
-        option.value = name;
-        option.textContent = name;
-        activitySelect.appendChild(option);
-      });
-    } catch (error) {
-      activitiesList.innerHTML = "<p>Failed to load activities. Please try again later.</p>";
-      console.error("Error fetching activities:", error);
-    }
-  }
-
-  // Handle form submission
-  signupForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const activity = document.getElementById("activity").value;
-
-    try {
-      const response = await fetch(
-        `/activities/${encodeURIComponent(activity)}/signup?email=${encodeURIComponent(email)}`,
-        {
-          method: "POST",
-        }
-      );
-
-      const result = await response.json();
-
-      if (response.ok) {
-        messageDiv.textContent = result.message;
-        messageDiv.className = "success";
-        signupForm.reset();
-      } else {
-        messageDiv.textContent = result.detail || "An error occurred";
-        messageDiv.className = "error";
-      }
-
-      messageDiv.classList.remove("hidden");
-
-      // Hide message after 5 seconds
-      setTimeout(() => {
-        messageDiv.classList.add("hidden");
-      }, 5000);
-    } catch (error) {
-      messageDiv.textContent = "Failed to sign up. Please try again.";
-      messageDiv.className = "error";
-      messageDiv.classList.remove("hidden");
-      console.error("Error signing up:", error);
-    }
-  });
-
-  // Initialize app
-  fetchActivities();
-});
-
-// Function to render participants (Copilot simulation)
-function renderParticipants(activity) {
-    const list = activity.participants.map(p => `<li>${p} <button class="unregister">X</button></li>`).join("");
-    return `<ul>${list}</ul>`;
+async function fetchActivities() {
+    const response = await fetch(apiBase);
+    const activities = await response.json();
+    renderActivities(activities);
 }
+
+function renderActivities(activities) {
+    const container = document.getElementById("activities-container");
+    container.innerHTML = "";
+    for (const [name, data] of Object.entries(activities)) {
+        const card = document.createElement("div");
+        card.className = "activity-card";
+        card.innerHTML = `
+            <h3>${name}</h3>
+            <p>${data.description}</p>
+            <p><strong>Schedule:</strong> ${data.schedule}</p>
+            <div class="participants">
+                <h4>Participants:</h4>
+                <ul>
+                    ${data.participants.map(p => `<li>${p} <button onclick="unregister('${name}', '${p}')">Unregister</button></li>`).join("")}
+                </ul>
+            </div>
+            <button onclick="signup('${name}')">Sign Up</button>
+        `;
+        container.appendChild(card);
+    }
+}
+
+async function unregister(activityName, email) {
+    console.log(`Unregistering ${email} from ${activityName}`);
+    await fetchActivities();
+}
+
+async function signup(activityName) {
+    const email = prompt("Enter your email:");
+    if (email) {
+        await fetch(`/activities/${activityName}/signup?email=${email}`, { method: 'POST' });
+        await fetchActivities();
+    }
+}
+
+fetchActivities();
