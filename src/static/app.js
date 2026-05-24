@@ -1,4 +1,3 @@
-// Finalized app.js (Simulating Copilot output)
 const apiBase = "/activities";
 
 async function fetchActivities() {
@@ -16,13 +15,10 @@ function renderActivities(activities) {
         card.innerHTML = `
             <h3>${name}</h3>
             <p>${data.description}</p>
-            <p><strong>Schedule:</strong> ${data.schedule}</p>
-            <div class="participants">
-                <h4>Participants:</h4>
-                <ul>
-                    ${data.participants.map(p => `<li>${p} <button onclick="unregister('${name}', '${p}')">Unregister</button></li>`).join("")}
-                </ul>
-            </div>
+            <p><strong>Participants:</strong></p>
+            <ul class="participant-list">
+                ${data.participants.map(p => `<li>${p} <button class="unregister-btn" onclick="unregister('${name}', '${p}')">X</button></li>`).join("")}
+            </ul>
             <button onclick="signup('${name}')">Sign Up</button>
         `;
         container.appendChild(card);
@@ -30,7 +26,7 @@ function renderActivities(activities) {
 }
 
 async function unregister(activityName, email) {
-    console.log(`Unregistering ${email} from ${activityName}`);
+    await fetch(`/activities/${activityName}/unregister?email=${email}`, { method: 'POST' });
     await fetchActivities();
 }
 

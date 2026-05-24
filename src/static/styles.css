@@ -1,6 +1,3 @@
-/* Finalized styles.css (Simulating Copilot output) */
-body { font-family: sans-serif; }
-.activity-card { border: 1px solid #ccc; padding: 10px; margin: 10px; }
-.participants ul { list-style: none; padding-left: 0; }
-.participants li { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-button { cursor: pointer; }
+/* Styles for participants */
+.participant-list { list-style: none; padding: 0; }
+.unregister-btn { margin-left: 10px; color: red; }
