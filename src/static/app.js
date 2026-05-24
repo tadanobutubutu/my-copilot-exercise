@@ -84,3 +84,9 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize app
   fetchActivities();
 });
+
+// Function to render participants (Copilot simulation)
+function renderParticipants(activity) {
+    const list = activity.participants.map(p => `<li>${p} <button class="unregister">X</button></li>`).join("");
+    return `<ul>${list}</ul>`;
+}
